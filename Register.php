@@ -1,7 +1,7 @@
 <?php
 class Register
 {
-    public $settings = array('name' => 'Register', 'description' => 'Allows guests to register an account.');
+    public $settings = array('name' => 'Register', 'description' => 'Allows potential customers to signup to your website.');
     function user_area()
     {
         global $billic, $db;
