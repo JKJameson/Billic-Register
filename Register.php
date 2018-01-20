@@ -10,10 +10,10 @@ class Register {
 			$billic->redirect('/');
 		}
 		$billic->module('FormBuilder');
-		if (!empty($billic->lic) && array_key_exists('Lu', $billic->lic)) {
-			$lic_count = $db->q('SELECT COUNT(*) FROM `users` WHERE `status` = ?', 'Active');
-			$lic_count = $lic_count[0]['COUNT(*)'];
-			if ($lic_count >= $billic->lic['Lu']) {
+		$license_data = $billic->get_license_data();
+		if ($license_data['desc']!='Unlimited') {
+			$lic_count = $db->q('SELECT COUNT(*) FROM `users`');
+			if ($lic_count[0]['COUNT(*)'] >= $license_data['users']) {
 				err('Unable to accept new users due to capacity. Please contact support.');
 			}
 		}
