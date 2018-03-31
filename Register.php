@@ -55,7 +55,7 @@ class Register {
 			}
 			if (empty($_POST['lastname'])) {
 				$billic->error('Last Name can not be empty', 'lastname');
-			} else if (!ctype_alpha($_POST['lastname'])) {
+			} else if (!ctype_alpha($_POST['lastname']) && !ctype_alpha(substr($_POST['lastname'], 0, 1).preg_replace('~\-~', '', substr($_POST['lastname'], 1, -1), 1).substr($_POST['lastname'], -1))) { // Allow a single dash in the middle of a word
 				$billic->error('Last Name can only be alphabetic characters', 'lastname');
 			}
 			if (empty($_POST['companyname']) && !empty($_POST['vatnumber'])) {
