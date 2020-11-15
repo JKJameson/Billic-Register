@@ -4,11 +4,14 @@ class Register {
 		'name' => 'Register',
 		'description' => 'Allows guests to register an account.',
 	);
+	private $isAddressRequired = true;
 	function user_area() {
 		global $billic, $db;
 		if (!empty($billic->user)) {
 			$billic->redirect('/');
 		}
+		if (get_config('register_skip_address')==='1')
+			$this->isAddressRequired = false;
 		$billic->module('FormBuilder');
 		$license_data = $billic->get_license_data();
 		if ($license_data['desc']!='Unlimited') {
@@ -74,23 +77,20 @@ class Register {
 					}
 				}
 			}
-			if (empty($_POST['address1'])) {
-				$billic->error('Address 1 can not be empty', 'address1');
+			if ($this->isAddressRequired) {
+				if (empty($_POST['address1']))
+					$billic->error('Address 1 can not be empty', 'address1');
+				if (empty($_POST['city']))
+					$billic->error('City can not be empty', 'city');
+				if (empty($_POST['state']))
+					$billic->error('State / County can not be empty', 'state');
 			}
-			if (empty($_POST['city'])) {
-				$billic->error('City can not be empty', 'city');
-			}
-			if (empty($_POST['state'])) {
-				$billic->error('State / County can not be empty', 'state');
-			}
-			if (empty($_POST['country']) || !array_key_exists($_POST['country'], $billic->countries)) {
+			if (empty($_POST['country']) || !array_key_exists($_POST['country'], $billic->countries))
 				$billic->error('Country is invalid', 'country');
-			}
-			if (empty($_POST['phonenumber'])) {
+			if (empty($_POST['phonenumber']))
 				$billic->error('Phone Number can not be empty', 'phonenumber');
-			} else if (!ctype_digit($_POST['phonenumber'])) {
+			else if (!ctype_digit($_POST['phonenumber']))
 				$billic->error('Phone Number must only be numbers', 'phonenumber');
-			}
 			if (empty($_POST['password'])) {
 				$billic->error('Password can not be empty', 'password');
 				$billic->error(NULL, 'password2');
@@ -106,9 +106,8 @@ class Register {
 					$billic->error('Email is invalid', 'email');
 				} else {
 					$check = $db->q('SELECT `id` FROM `users` WHERE `email` = ?', $_POST['email']);
-					if (count($check) > 0) {
+					if (count($check) > 0)
 						$billic->error('Email is already in use for another account. Login using the form above', 'email');
-					}
 				}
 			}
 			if (!empty($billic->errors)) {
@@ -118,8 +117,15 @@ class Register {
 				}
 			}
 			if (empty($billic->errors)) {
-				if (!isset($_SESSION['order_save'])) {
+				if (!isset($_SESSION['order_save']))
 					unset($_SESSION['captcha']);
+				if (!$this->isAddressRequired) {
+					$_POST['address1'] = '';
+					$_POST['address2'] = '';
+					$_POST['city'] = '';
+					$_POST['state'] = '';
+					$_POST['postcode'] = '';
+					
 				}
 				$activation = $billic->rand_str(10);
 				$salt = $billic->rand_str(5);
@@ -196,11 +202,13 @@ class Register {
 		echo '<tr><td' . $billic->highlight('lastname') . '>Last Name:</td><td><input type="text" class="form-control" name="lastname" value="' . safe($_POST['lastname']) . '"></td></tr>';
 		echo '<tr style="opacity:0.8"><td' . $billic->highlight('companyname') . '>Company Name:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="companyname" value="' . safe($_POST['companyname']) . '"></td></tr>';
 		echo '<tr style="opacity:0.8"><td' . $billic->highlight('vatnumber') . '>VAT Number:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="vatnumber" value="' . safe($_POST['vatnumber']) . '"> (For EU Customers only)</td></tr>';
-		echo '<tr><td' . $billic->highlight('address1') . '>Address 1:</td><td><input type="text" class="form-control" name="address1" value="' . safe($_POST['address1']) . '"></td></tr>';
-		echo '<tr style="opacity:0.8"><td' . $billic->highlight('address2') . '>Address 2:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="address2" value="' . safe($_POST['address2']) . '"></td></tr>';
-		echo '<tr><td' . $billic->highlight('city') . '>City:</td><td><input type="text" class="form-control" name="city" value="' . safe($_POST['city']) . '"></td></tr>';
-		echo '<tr><td' . $billic->highlight('state') . '>State / County:</td><td><input type="text" class="form-control" name="state" value="' . safe($_POST['state']) . '"></td></tr>';
-		echo '<tr style="opacity:0.8"><td' . $billic->highlight('postcode') . '>Postcode:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="postcode" value="' . safe($_POST['postcode']) . '"></div></td></tr>';
+		if ($this->isAddressRequired) {
+			echo '<tr><td' . $billic->highlight('address1') . '>Address 1:</td><td><input type="text" class="form-control" name="address1" value="' . safe($_POST['address1']) . '"></td></tr>';
+			echo '<tr style="opacity:0.8"><td' . $billic->highlight('address2') . '>Address 2:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="address2" value="' . safe($_POST['address2']) . '"></td></tr>';
+			echo '<tr><td' . $billic->highlight('city') . '>City:</td><td><input type="text" class="form-control" name="city" value="' . safe($_POST['city']) . '"></td></tr>';
+			echo '<tr><td' . $billic->highlight('state') . '>State / County:</td><td><input type="text" class="form-control" name="state" value="' . safe($_POST['state']) . '"></td></tr>';
+			echo '<tr style="opacity:0.8"><td' . $billic->highlight('postcode') . '>Postcode:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="postcode" value="' . safe($_POST['postcode']) . '"></div></td></tr>';
+		}
 		echo '<tr><td' . $billic->highlight('country') . '>Country:</td><td><select class="form-control" name="country">';
 		foreach ($billic->countries as $key => $country) {
 			echo '<option value="' . $key . '"' . ($key == $_POST['country'] ? ' selected="1"' : '') . '>' . $country . '</option>';
@@ -208,7 +216,7 @@ class Register {
 		echo '</select></td></tr>';
 		echo '<tr><td' . $billic->highlight('phonenumber') . '>Phone Number:</td><td><input type="text" class="form-control" name="phonenumber" maxlength="15" value="' . safe($_POST['phonenumber']) . '"></td></tr>';
 		echo '<tr><td' . $billic->highlight('email') . '>Email:</td><td><input type="text" class="form-control" name="email" value="' . safe($_POST['email']) . '"></td></tr>';
-		echo '<tr><td' . $billic->highlight('password') . '>Password:</td><td><input type="password" class="form-control" name="password"></td></tr>';
+		echo '<tr><td' . $billic->highlight('password') . '>Password:</td><td><input type="password" class="form-control" name="password" ></td></tr>';
 		echo '<tr><td' . $billic->highlight('password2') . '>Password Again:</td><td><input type="password" class="form-control" name="password2"></td></tr>';
 		if (!isset($_SESSION['order_save'])) {
 			echo '<tr><td' . $billic->highlight('captcha') . ' colspan="2"><div style="float:left;padding-right:20px"><img src="/Captcha/' . time() . '" width="150" height="75" alt="CAPTCHA"></div><br>Enter the number you see<br><input type="text" class="form-control" name="captcha" size="6" style="text-align:center;width:150px" value="' . (empty($billic->errors['captcha']) ? safe($_POST['captcha']) : '') . '"></td></tr>';
@@ -274,11 +282,13 @@ class Register {
 				echo '<option value="' . $key . '"' . ($key == $current ? ' selected="1"' : '') . '>' . $country . '</option>';
 			}
 			echo '</select></td></tr>';
+			echo '<tr><td colspan="2"><input type="checkbox" name="register_skip_address" value="1"'.(get_config('register_skip_address')==='1'?' checked':'').'> Do not collect address on registration form?</td></tr>';
 			echo '<tr><td colspan="2" align="center"><input type="submit" class="btn btn-default" name="update" value="Update &raquo;"></td></tr>';
 			echo '</table></form>';
 		} else {
 			if (empty($billic->errors)) {
 				set_config('register_default_country', $_POST['register_default_country']);
+				set_config('register_skip_address', $_POST['register_skip_address']);
 				$billic->status = 'updated';
 			}
 		}
