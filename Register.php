@@ -209,28 +209,28 @@ class Register {
 	function register_form() {
 		global $billic, $db;
         $country = $_POST['country'] ?? get_config('register_default_country');
-		echo '<tr><td' . $billic->highlight('firstname') . '>First Name:</td><td><input type="text" class="form-control" name="firstname" value="' . safe('firstname') . '"></td></tr>';
-		echo '<tr><td' . $billic->highlight('lastname') . '>Last Name:</td><td><input type="text" class="form-control" name="lastname" value="' . safe('lastname') . '"></td></tr>';
-		echo '<tr style="opacity:0.8"><td' . $billic->highlight('companyname') . '>Company Name:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="companyname" value="' . safe('companyname') . '"></td></tr>';
-		echo '<tr style="opacity:0.8"><td' . $billic->highlight('vatnumber') . '>VAT Number:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="vatnumber" value="' . safe('vatnumber') . '"> (For EU Customers only)</td></tr>';
+		echo '<tr><td' . $billic->highlight('firstname') . '>First Name:</td><td><input type="text" class="form-control" name="firstname" value="' . safePOST('firstname') . '"></td></tr>';
+		echo '<tr><td' . $billic->highlight('lastname') . '>Last Name:</td><td><input type="text" class="form-control" name="lastname" value="' . safePOST('lastname') . '"></td></tr>';
+		echo '<tr style="opacity:0.8"><td' . $billic->highlight('companyname') . '>Company Name:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="companyname" value="' . safePOST('companyname') . '"></td></tr>';
+		echo '<tr style="opacity:0.8"><td' . $billic->highlight('vatnumber') . '>VAT Number:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="vatnumber" value="' . safePOST('vatnumber') . '"> (For EU Customers only)</td></tr>';
 		if ($this->isAddressRequired) {
-			echo '<tr><td' . $billic->highlight('address1') . '>Address 1:</td><td><input type="text" class="form-control" name="address1" value="' . safe('address1') . '"></td></tr>';
-			echo '<tr style="opacity:0.8"><td' . $billic->highlight('address2') . '>Address 2:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="address2" value="' . safe('address2') . '"></td></tr>';
-			echo '<tr><td' . $billic->highlight('city') . '>City:</td><td><input type="text" class="form-control" name="city" value="' . safe('city') . '"></td></tr>';
-			echo '<tr><td' . $billic->highlight('state') . '>State / County:</td><td><input type="text" class="form-control" name="state" value="' . safe('state') . '"></td></tr>';
-			echo '<tr style="opacity:0.8"><td' . $billic->highlight('postcode') . '>Postcode:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="postcode" value="' . safe('postcode') . '"></div></td></tr>';
+			echo '<tr><td' . $billic->highlight('address1') . '>Address 1:</td><td><input type="text" class="form-control" name="address1" value="' . safePOST('address1') . '"></td></tr>';
+			echo '<tr style="opacity:0.8"><td' . $billic->highlight('address2') . '>Address 2:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="address2" value="' . safePOST('address2') . '"></td></tr>';
+			echo '<tr><td' . $billic->highlight('city') . '>City:</td><td><input type="text" class="form-control" name="city" value="' . safePOST('city') . '"></td></tr>';
+			echo '<tr><td' . $billic->highlight('state') . '>State / County:</td><td><input type="text" class="form-control" name="state" value="' . safePOST('state') . '"></td></tr>';
+			echo '<tr style="opacity:0.8"><td' . $billic->highlight('postcode') . '>Postcode:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="postcode" value="' . safePOST('postcode') . '"></div></td></tr>';
 		}
 		echo '<tr><td' . $billic->highlight('country') . '>Country:</td><td><select class="form-control" name="country">';
 		foreach ($billic->countries as $key => $country) {
 			echo '<option value="' . $key . '"' . ($key == $country ? ' selected="1"' : '') . '>' . $country . '</option>';
 		}
 		echo '</select></td></tr>';
-		echo '<tr><td' . $billic->highlight('phonenumber') . '>Phone Number:</td><td><input type="text" class="form-control" name="phonenumber" maxlength="15" value="' . safe('phonenumber') . '"></td></tr>';
-		echo '<tr><td' . $billic->highlight('email') . '>Email:</td><td><input type="text" class="form-control" name="email" value="' . safe('email') . '"></td></tr>';
+		echo '<tr><td' . $billic->highlight('phonenumber') . '>Phone Number:</td><td><input type="text" class="form-control" name="phonenumber" maxlength="15" value="' . safePOST('phonenumber') . '"></td></tr>';
+		echo '<tr><td' . $billic->highlight('email') . '>Email:</td><td><input type="text" class="form-control" name="email" value="' . safePOST('email') . '"></td></tr>';
 		echo '<tr><td' . $billic->highlight('password') . '>Password:</td><td><input type="password" class="form-control" name="password" ></td></tr>';
 		echo '<tr><td' . $billic->highlight('password2') . '>Password Again:</td><td><input type="password" class="form-control" name="password2"></td></tr>';
 		if (!isset($_SESSION['order_save'])) {
-			echo '<tr><td' . $billic->highlight('captcha') . ' colspan="2"><div style="float:left;padding-right:20px"><img src="/Captcha/' . time() . '" width="150" height="75" alt="CAPTCHA"></div><br>Enter the number you see<br><input type="text" class="form-control" name="captcha" size="6" style="text-align:center;width:150px" value="' . (empty($billic->errors['captcha']) ? safe('captcha') : '') . '"></td></tr>';
+			echo '<tr><td' . $billic->highlight('captcha') . ' colspan="2"><div style="float:left;padding-right:20px"><img src="/Captcha/' . time() . '" width="150" height="75" alt="CAPTCHA"></div><br>Enter the number you see<br><input type="text" class="form-control" name="captcha" size="6" style="text-align:center;width:150px" value="' . (empty($billic->errors['captcha']) ? safePOST('captcha') : '') . '"></td></tr>';
 		}
 	}
 	function check_vat($vat_no, $state_code) {
