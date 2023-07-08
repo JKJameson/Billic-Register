@@ -208,7 +208,7 @@ class Register {
 	}
 	function register_form() {
 		global $billic, $db;
-        $country = $_POST['country'] ?? get_config('register_default_country');
+        $countryPOST = $_POST['country'] ?? get_config('register_default_country');
 		echo '<tr><td' . $billic->highlight('firstname') . '>First Name:</td><td><input type="text" class="form-control" name="firstname" value="' . safePOST('firstname') . '"></td></tr>';
 		echo '<tr><td' . $billic->highlight('lastname') . '>Last Name:</td><td><input type="text" class="form-control" name="lastname" value="' . safePOST('lastname') . '"></td></tr>';
 		echo '<tr style="opacity:0.8"><td' . $billic->highlight('companyname') . '>Company Name:<br><sup><i>Optional</i></sup></td><td><input type="text" class="form-control" name="companyname" value="' . safePOST('companyname') . '"></td></tr>';
@@ -222,7 +222,7 @@ class Register {
 		}
 		echo '<tr><td' . $billic->highlight('country') . '>Country:</td><td><select class="form-control" name="country">';
 		foreach ($billic->countries as $key => $country) {
-			echo '<option value="' . $key . '"' . ($key == $country ? ' selected="1"' : '') . '>' . $country . '</option>';
+			echo '<option value="' . $key . '"' . ($key == $countryPOST ? ' selected="1"' : '') . '>' . $country . '</option>';
 		}
 		echo '</select></td></tr>';
 		echo '<tr><td' . $billic->highlight('phonenumber') . '>Phone Number:</td><td><input type="text" class="form-control" name="phonenumber" maxlength="15" value="' . safePOST('phonenumber') . '"></td></tr>';
