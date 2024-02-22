@@ -111,7 +111,7 @@ class Register {
 				$billic->error('Passwords do not match', 'password');
 				$billic->error(NULL, 'password2');
 			}
-			if (!isset($_SESSION['order_save']) && (empty($email) || $_SESSION['captcha'] != $email)) {
+			if (!isset($_SESSION['order_save']) && strtolower($_SESSION['captcha']) !== strtolower($_POST['captcha'])) {
 				unset($_SESSION['captcha']);
 				$billic->error('Captcha code invalid, please try again', 'captcha');
 			} else {
