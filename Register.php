@@ -138,8 +138,8 @@ class Register {
 					$city = '';
 					$state = '';
 					$postcode = '';
-					
 				}
+				$referral = $_COOKIE['a'] ?? NULL;
 				$activation = $billic->rand_str(10);
 				$salt = $billic->rand_str(5);
 				$password = md5($salt . $_POST['password']) . ':' . $salt;
@@ -163,7 +163,8 @@ class Register {
 					//'status' => 'activation',
 					'status' => 'Active',
 					'activation' => $activation,
-					'redirect' => base64_decode(urldecode($_GET['Redirect'])) ,
+					'redirect' => base64_decode(urldecode($_GET['Redirect'])),
+					'referral' => $referral,
 				));
 				$link = 'http' . (get_config('billic_ssl') == 1 ? 's' : '') . '://' . get_config('billic_domain') . '/Register/Activate/' . $activation . '/ID/' . $billic->userid . '/';
 				/*$billic->email($email, 'Activate your Account', 'Dear '.$firstname.' '.$lastname.',<br>
