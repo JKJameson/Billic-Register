@@ -111,7 +111,7 @@ class Register {
 				$billic->error('Passwords do not match', 'password');
 				$billic->error(NULL, 'password2');
 			}
-			if (!isset($_SESSION['order_save']) && strtolower($_SESSION['captcha']) !== strtolower($_POST['captcha'])) {
+			if (!isset($_SESSION['order_save']) && (!isset($_SESSION['captcha']) || strtolower($_SESSION['captcha']) !== strtolower($_POST['captcha']))) {
 				unset($_SESSION['captcha']);
 				$billic->error('Captcha code invalid, please try again', 'captcha');
 			} else {
@@ -186,7 +186,8 @@ class Register {
 					));
 					$user_row = $db->q('SELECT * FROM `users` WHERE `id` = ?', $billic->userid);
 					$user_row = $user_row[0];
-					$billic->module('maxmind');
+					$billic->module('Maxmind');
+					$billic->module('Fraudic');
 					$billic->module_call_functions('after_login', array(
 						$user_row,
 						$_POST['password']
